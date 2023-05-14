@@ -1,36 +1,70 @@
 {
-  "name": "send-slack-mesaage",
-  "displayName": "Send Slack Mesaage",
-  "description": "",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.78.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
-  "main": "./extension.js",
-  "contributes": {
-    "commands": [{
-      "command": "send-slack-mesaage.helloWorld",
-      "title": "Hello World"
-    }]
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "node ./test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.78.0",
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
-    "eslint": "^8.36.0",
-    "glob": "^8.1.0",
-    "mocha": "^10.2.0",
-    "typescript": "^4.9.5",
-    "@vscode/test-electron": "^2.3.0"
-  }
+    "name": "send-slack-message",
+    "displayName": "sendSlackMessage",
+    "description": "",
+    "version": "0.0.1",
+    "publisher": "JunTaeHahm",
+    "icon": "icon.png",
+    "engines": {
+        "vscode": "^1.78.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/JunTaeHahm/send-slack-message.git"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.sendSlackMessage",
+                "title": "Send a Slack Message"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "extension.sendSlackMessage",
+                "key": "ctrl+shift+m",
+                "mac": "cmd+shift+m",
+                "when": "editorTextFocus"
+            }
+        ],
+        "configuration": {
+            "title": "Send Slack Message",
+            "properties": {
+                "sendSlackMessage.token": {
+                    "type": "string",
+                    "default": "",
+                    "description": "메시지를 보낼 채널의 슬랙봇 토큰을 입력하세요."
+                },
+                "sendSlackMessage.channel": {
+                    "type": "string",
+                    "default": "",
+                    "description": "메시지를 보낼 채널의 이름을 입력하세요."
+                }
+            }
+        }
+    },
+    "main": "./extension.js",
+    "scripts": {
+        "lint": "eslint .",
+        "pretest": "npm run lint",
+        "test": "node ./test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "16.x",
+        "@types/vscode": "^1.78.0",
+        "@vscode/test-electron": "^2.3.0",
+        "eslint": "^8.36.0",
+        "glob": "^8.1.0",
+        "mocha": "^10.2.0",
+        "typescript": "^4.9.5"
+    },
+    "dependencies": {
+        "@slack/web-api": "^6.8.1"
+    }
 }

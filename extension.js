@@ -1,36 +1,63 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const { WebClient } = require('@slack/web-api');
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+async function sendMessage(text) {
+    // 설정 읽기
+    const config = vscode.workspace.getConfiguration('sendSlackMessage');
+    const token = config.get('token');
+    const channel = config.get('channel');
 
-/**
- * @param {vscode.ExtensionContext} context
- */
-function activate(context) {
+    // 토큰과 채널 설정되어 있는지 확인
+    if (!token || !channel) {
+        vscode.window.showErrorMessage('VSCode의 설정에서 토큰과 채널을 설정해주세요.');
+        return;
+    }
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "send-slack-mesaage" is now active!');
+    // Slack 웹 클라이언트를 생성
+    const web = new WebClient(token);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('send-slack-mesaage.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
+    try {
+        // 메시지를 보내기
+        await web.chat.postMessage({
+            channel: channel,
+            text: text,
+        });
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Send Slack Mesaage!');
-	});
+        // 성공 시
+        let infoMessage = vscode.window.showInformationMessage('일정 등록 성공');
 
-	context.subscriptions.push(disposable);
+        setTimeout(() => {
+            infoMessage.dispose();
+            vscode.window.showInformationMessage('');
+        }, 1000);
+    } catch (error) {
+        // 실패 시
+        let errorMessage = vscode.window.showErrorMessage(`일정 등록 실패 | ${error.message}`);
+
+        setTimeout(() => {
+            errorMessage.dispose();
+            vscode.window.showErrorMessage('');
+        }, 1000);
+    }
 }
 
-// This method is called when your extension is deactivated
+function activate(context) {
+    let disposable = vscode.commands.registerCommand('extension.sendSlackMessage', async function () {
+        // 메시지를 입력 받기
+        const message = await vscode.window.showInputBox({ prompt: '일정을 입력하세요.' });
+
+        if (message) {
+            // 메시지가 있으면 Slack에 보내기
+            await sendMessage(message);
+        }
+    });
+
+    context.subscriptions.push(disposable);
+}
+
 function deactivate() {}
 
 module.exports = {
-	activate,
-	deactivate
-}
+    activate,
+    deactivate,
+};
